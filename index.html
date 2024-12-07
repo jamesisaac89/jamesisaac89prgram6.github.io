@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>25mph or More Over</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    
+    <script src="https://unpkg.com/vue@3"></script>
+</head>
+<body>
+
+<div class="container">
+    <nav class="navbar navbar-inverse">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Our Website</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="index.html">All Tickets</a></li>
+            <li class="active"><a href="25over.html">25mph or More Over</a></li>
+        </ul>
+    </nav>
+
+    <div id="ticketApp">
+        <h2>Tickets: 25mph or More Over the Posted Speed</h2>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Time</th>
+                    <th>Posted Speed</th>
+                    <th>MPH Over</th>
+                    <th>Violator Sex</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="ticket in filteredTickets" :key="ticket.tid">
+                    <td>{{ ticket.tid }}</td>
+                    <td>{{ ticket.stop_time }}</td>
+                    <td>{{ ticket.posted_speed }}</td>
+                    <td>{{ ticket.actual_speed - ticket.posted_speed }}</td>
+                    <td>{{ ticket.violator_sex }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div> <!-- end of ticketApp -->
+</div> <!-- end of class='container' -->
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                tickets: [],
+                filteredTickets: [] // New property to hold filtered tickets
+            }
+        },
+        created() {
+            this.getData();
+        },
+        methods: {
+            async getData() {
+                const response = await fetch('tickets1.json');
+                this.tickets = await response.json();
+                this.filterTickets(); // Call the filter method after fetching data
+            },
+            filterTickets() {
+                // Filter tickets where actual_speed is more than posted_speed + 25
+                this.filteredTickets = this.tickets.filter(ticket => ticket.actual_speed > ticket.posted_speed + 25);
+            }
+        }
+    });
+
+    app.mount('#ticketApp');
+</script>
+</body>
+</html>
